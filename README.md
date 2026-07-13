@@ -71,6 +71,14 @@ pusher::last_pushes()
 pusher::last_pushes(n = 5)
 ```
 
+Show the next check estimate, next commits to push, and recent pushes:
+
+```r
+pusher::overview()
+```
+
+The printed overview uses your system timezone.
+
 Successful push notifications are off by default. On macOS, enable or disable
 them with:
 
@@ -88,7 +96,7 @@ Tracked repository config is written to:
 
 ## macOS Scheduler
 
-Install an hourly LaunchAgent:
+Install a LaunchAgent that checks every 30 minutes:
 
 ```r
 pusher::install_scheduler()

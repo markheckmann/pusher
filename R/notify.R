@@ -23,18 +23,22 @@
     stop("Push notifications currently support macOS only.", call. = FALSE)
   }
 
-  result <- system2(
-    "osascript",
-    c("-e", sprintf('display notification %s with title "pusher"', .applescript_quote(message))),
-    stdout = TRUE,
-    stderr = TRUE
-  )
+  result <- .run_osascript(sprintf('display notification %s with title "pusher"', .applescript_quote(message)))
   code <- attr(result, "status")
   if (!is.null(code) && code != 0L) {
     stop(sprintf("osascript notification failed: %s", paste(result, collapse = "\n")), call. = FALSE)
   }
 
   invisible(TRUE)
+}
+
+.run_osascript <- function(script) {
+  system2(
+    "osascript",
+    c("-e", shQuote(script)),
+    stdout = TRUE,
+    stderr = TRUE
+  )
 }
 
 .applescript_quote <- function(x) {

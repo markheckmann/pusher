@@ -2,7 +2,7 @@
 % Please edit documentation in R/scheduler.R
 \name{install_scheduler}
 \alias{install_scheduler}
-\title{Install the hourly macOS launchd scheduler}
+\title{Install the macOS launchd scheduler}
 \usage{
 install_scheduler(load = TRUE)
 }
@@ -13,5 +13,5 @@ install_scheduler(load = TRUE)
 The installed plist path, invisibly.
 }
 \description{
-Install the hourly macOS launchd scheduler
+Install the macOS launchd scheduler
 }

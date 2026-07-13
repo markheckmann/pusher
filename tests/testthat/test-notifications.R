@@ -48,3 +48,11 @@ test_that("successful pushes notify only when enabled", {
     expect_match(notifications[[1]], "Pushed 1 commit from repo/main", fixed = TRUE)
   })
 })
+
+test_that("osascript runner preserves script arguments with spaces", {
+  skip_if_not(identical(Sys.info()[["sysname"]], "Darwin"))
+
+  result <- pusher:::.run_osascript('return "ok"')
+
+  expect_equal(unname(result), "ok")
+})

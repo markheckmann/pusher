@@ -1,5 +1,12 @@
 # pusher 0.0.3
 
+* Changed the macOS scheduler from hourly to every 30 minutes.
+
+* Changed `overview()` output to print timestamps in the system timezone.
+
+* Added `overview()` to print the next check cycle estimate, upcoming
+  commits, and recent successful pushes in one place.
+
 * Added opt-in macOS notifications for successful pushes. Notifications are off
   by default and can be toggled with `set_notifications()` and inspected with
   `notifications_enabled()`.

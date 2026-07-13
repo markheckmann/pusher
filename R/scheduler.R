@@ -2,6 +2,10 @@
   "com.pusher.hourly"
 }
 
+.scheduler_interval_seconds <- function() {
+  1800L
+}
+
 .launchd_target <- function() {
   file.path(path.expand("~"), "Library", "LaunchAgents", paste0(.launchd_label(), ".plist"))
 }
@@ -34,7 +38,7 @@
     "    <string>", .plist_escape(expr), "</string>\n",
     "  </array>\n",
     "  <key>StartInterval</key>\n",
-    "  <integer>3600</integer>\n",
+    "  <integer>", .scheduler_interval_seconds(), "</integer>\n",
     "  <key>RunAtLoad</key>\n",
     "  <true/>\n",
     "  <key>StandardOutPath</key>\n",
@@ -61,7 +65,7 @@
   uid[[1]]
 }
 
-#' Install the hourly macOS launchd scheduler
+#' Install the macOS launchd scheduler
 #'
 #' @param load If `TRUE`, load the LaunchAgent after writing it.
 #' @return The installed plist path, invisibly.
@@ -90,7 +94,7 @@ install_scheduler <- function(load = TRUE) {
   invisible(.launchd_target())
 }
 
-#' Uninstall the hourly macOS launchd scheduler
+#' Uninstall the macOS launchd scheduler
 #'
 #' @return The removed plist path, invisibly.
 #' @export

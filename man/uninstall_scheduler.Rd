@@ -2,7 +2,7 @@
 % Please edit documentation in R/scheduler.R
 \name{uninstall_scheduler}
 \alias{uninstall_scheduler}
-\title{Uninstall the hourly macOS launchd scheduler}
+\title{Uninstall the macOS launchd scheduler}
 \usage{
 uninstall_scheduler()
 }
@@ -10,5 +10,5 @@ uninstall_scheduler()
 The removed plist path, invisibly.
 }
 \description{
-Uninstall the hourly macOS launchd scheduler
+Uninstall the macOS launchd scheduler
 }
