@@ -16,7 +16,7 @@ A list with \code{scheduler}, \code{upcoming}, and \code{last_pushes} data frame
 invisibly.
 }
 \description{
-Prints the estimated next check cycle, the next unpublished commits
-waiting for their scheduled date, and recent successful pushes. Printed
-timestamps use the system timezone.
+Prints the estimated next check cycle, a countdown to the next commit date,
+the next unpublished commits waiting for their scheduled date, and recent
+successful pushes. Printed timestamps use the system timezone.
 }

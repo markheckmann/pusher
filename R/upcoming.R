@@ -5,6 +5,7 @@
     remote = character(),
     remote_branch = character(),
     sha = character(),
+    title = character(),
     position = integer(),
     author_date = character(),
     committer_date = character(),
@@ -31,6 +32,7 @@
     remote = analysis$remote,
     remote_branch = analysis$remote_branch,
     sha = upcoming$sha,
+    title = upcoming$title,
     position = positions,
     author_date = format(upcoming$author_date, "%Y-%m-%dT%H:%M:%S%z", tz = "UTC"),
     committer_date = format(upcoming$committer_date, "%Y-%m-%dT%H:%M:%S%z", tz = "UTC"),
@@ -42,7 +44,8 @@
 #' List upcoming unpublished commits
 #'
 #' @param n Maximum number of upcoming commits to return.
-#' @return A data frame of future unpublished commits, ordered by effective date.
+#' @return A data frame of future unpublished commits, including commit titles,
+#'   ordered by effective date.
 #' @export
 upcoming_pushes <- function(n = 20) {
   if (!is.numeric(n) || length(n) != 1L || is.na(n) || n < 0) {

@@ -1,5 +1,10 @@
 # pusher 0.0.3
 
+* Added a `Next push in X minutes` summary line to `overview()`.
+
+* Added commit titles to `upcoming_pushes()` and the `overview()` upcoming
+  commits section.
+
 * Changed the macOS scheduler from hourly to every 30 minutes.
 
 * Changed `overview()` output to print timestamps in the system timezone.

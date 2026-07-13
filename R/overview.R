@@ -113,9 +113,28 @@
     repo = .repo_name(upcoming$repo_root),
     branch = upcoming$branch,
     sha = .short_sha(upcoming$sha),
+    title = upcoming$title,
     remote = paste0(upcoming$remote, "/", upcoming$remote_branch),
     stringsAsFactors = FALSE
   )
+}
+
+.overview_next_push_line <- function(upcoming, now = Sys.time()) {
+  if (!nrow(upcoming)) {
+    return("Next push: no future unpublished commits.")
+  }
+
+  next_time <- .iso_to_time(upcoming$effective_date[[1]])
+  minutes <- ceiling(as.numeric(difftime(next_time, now, units = "mins")))
+  if (is.na(minutes)) {
+    return("Next push: unavailable.")
+  }
+  if (minutes <= 0) {
+    return(sprintf("Next push due now: %s", upcoming$title[[1]]))
+  }
+
+  minute_label <- if (minutes == 1) "minute" else "minutes"
+  sprintf("Next push in %s %s: %s", minutes, minute_label, upcoming$title[[1]])
 }
 
 .overview_last_pushes_table <- function(pushes) {
@@ -145,9 +164,9 @@
 
 #' Show a pusher overview
 #'
-#' Prints the estimated next check cycle, the next unpublished commits
-#' waiting for their scheduled date, and recent successful pushes. Printed
-#' timestamps use the system timezone.
+#' Prints the estimated next check cycle, a countdown to the next commit date,
+#' the next unpublished commits waiting for their scheduled date, and recent
+#' successful pushes. Printed timestamps use the system timezone.
 #'
 #' @param upcoming_n Maximum number of upcoming commits to show.
 #' @param last_n Maximum number of recent successful pushes to show.
@@ -167,6 +186,7 @@ overview <- function(upcoming_n = 5, last_n = 5) {
   pushes <- last_pushes(n = last_n)
 
   cat("Pusher Overview\n")
+  cat(.overview_next_push_line(upcoming), "\n", sep = "")
   .print_overview_section("Next Check Cycle", .overview_scheduler_table(scheduler), "Scheduler status is unavailable.")
   .print_overview_section("Next Commits To Push", .overview_upcoming_table(upcoming), "No future unpublished commits.")
   .print_overview_section("Last Commits Pushed", .overview_last_pushes_table(pushes), "No successful pushes logged.")

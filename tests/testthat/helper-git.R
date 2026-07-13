@@ -36,7 +36,7 @@ commit_file <- function(repo, name, content, date) {
   git(repo, c("add", name))
   git(
     repo,
-    c("commit", "-m", paste("commit", name)),
+    c("commit", "-m", shQuote(paste("commit", name))),
     env = c(
       paste0("GIT_AUTHOR_DATE=", date),
       paste0("GIT_COMMITTER_DATE=", date)

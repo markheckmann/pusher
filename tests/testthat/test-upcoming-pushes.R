@@ -14,6 +14,7 @@ test_that("upcoming_pushes returns future commits ordered by effective date", {
     upcoming <- pusher::upcoming_pushes()
 
     expect_equal(upcoming$sha, c(sooner_sha, later_sha))
+    expect_equal(upcoming$title, c("commit sooner.txt", "commit later.txt"))
     expect_false(due_sha %in% upcoming$sha)
     expect_equal(upcoming$position, c(3L, 2L))
     expect_true(all(upcoming$effective_date == sort(upcoming$effective_date)))
@@ -34,6 +35,7 @@ test_that("upcoming_pushes respects n", {
     pusher::add_repo(fixture$repo)
 
     expect_equal(pusher::upcoming_pushes(n = 1)$sha, first_sha)
+    expect_equal(pusher::upcoming_pushes(n = 1)$title, "commit first.txt")
     expect_equal(nrow(pusher::upcoming_pushes(n = 0)), 0L)
   })
 })

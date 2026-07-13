@@ -10,7 +10,8 @@ upcoming_pushes(n = 20)
 \item{n}{Maximum number of upcoming commits to return.}
 }
 \value{
-A data frame of future unpublished commits, ordered by effective date.
+A data frame of future unpublished commits, including commit titles,
+ordered by effective date.
 }
 \description{
 List upcoming unpublished commits

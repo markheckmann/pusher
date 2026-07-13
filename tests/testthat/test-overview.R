@@ -19,11 +19,14 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
 
     expect_named(result, c("scheduler", "upcoming", "last_pushes"))
     expect_equal(result$upcoming$sha, next_sha)
+    expect_equal(result$upcoming$title, "commit next.txt")
     expect_equal(result$last_pushes$sha, "def456789")
+    expect_match(paste(output, collapse = "\n"), "Next push in [0-9]+ minutes: commit next.txt")
     expect_match(paste(output, collapse = "\n"), "Next Check Cycle")
     expect_match(paste(output, collapse = "\n"), "system_time")
     expect_match(paste(output, collapse = "\n"), "time_zone")
     expect_match(paste(output, collapse = "\n"), "Next Commits To Push")
+    expect_match(paste(output, collapse = "\n"), "commit next.txt")
     expect_match(paste(output, collapse = "\n"), "Last Commits Pushed")
   })
 })
@@ -31,6 +34,14 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
 test_that("overview validates counts", {
   expect_error(pusher::overview(upcoming_n = -1), "upcoming_n")
   expect_error(pusher::overview(last_n = -1), "last_n")
+})
+
+test_that("overview reports when no next push is available", {
+  with_pusher_home({
+    output <- utils::capture.output(pusher::overview(upcoming_n = 0, last_n = 0))
+
+    expect_match(paste(output, collapse = "\n"), "Next push: no future unpublished commits", fixed = TRUE)
+  })
 })
 
 test_that("overview rolls stale scheduler times forward", {

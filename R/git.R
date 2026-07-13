@@ -83,9 +83,10 @@
 }
 
 .git_commit_info <- function(repo, sha) {
-  line <- .git_output(repo, c("show", "-s", "--format=%H%x09%aI%x09%cI", sha))[[1]]
-  parts <- strsplit(line, "\t", fixed = TRUE)[[1]]
-  if (length(parts) != 3) {
+  sep <- "\037"
+  line <- .git_output(repo, c("show", "-s", "--format=%H%x1f%aI%x1f%cI%x1f%s", sha))[[1]]
+  parts <- strsplit(line, sep, fixed = TRUE)[[1]]
+  if (length(parts) != 4) {
     stop(sprintf("Unexpected git show output for commit %s.", sha), call. = FALSE)
   }
 
@@ -95,6 +96,7 @@
 
   data.frame(
     sha = parts[[1]],
+    title = parts[[4]],
     author_date = author_date,
     committer_date = committer_date,
     effective_date = effective_date,
@@ -106,6 +108,7 @@
   if (!length(shas)) {
     return(data.frame(
       sha = character(),
+      title = character(),
       author_date = as.POSIXct(character()),
       committer_date = as.POSIXct(character()),
       effective_date = as.POSIXct(character()),

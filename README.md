@@ -44,6 +44,8 @@ pusher::upcoming_pushes()
 pusher::check_once(dry_run = TRUE)
 ```
 
+`upcoming_pushes()` includes each commit title.
+
 When commits are due, `pusher` pushes the newest contiguous due commit:
 
 ```sh
