@@ -46,7 +46,27 @@ test_that("successful pushes notify only when enabled", {
     expect_true(file.exists(notify_file))
     notifications <- readLines(notify_file, warn = FALSE)
     expect_match(notifications[[1]], "Pushed 1 commit from repo/main", fixed = TRUE)
+    expect_match(notifications[[1]], "commit due-again.txt", fixed = TRUE)
   })
+})
+
+test_that("notification message includes the pushed commit title", {
+  analysis <- list(
+    repo_root = "/tmp/repo",
+    branch = "main",
+    due = 1L,
+    due_sha = "abc123",
+    commits = data.frame(
+      sha = c("older", "abc123"),
+      title = c("Older commit", "Push this title"),
+      stringsAsFactors = FALSE
+    )
+  )
+
+  expect_equal(
+    pusher:::.notification_message(analysis),
+    "Pushed 1 commit from repo/main: Push this title"
+  )
 })
 
 test_that("osascript runner preserves script arguments with spaces", {

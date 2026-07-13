@@ -1,12 +1,33 @@
 .notification_message <- function(analysis) {
   repo_name <- basename(analysis$repo_root)
-  sprintf(
+  message <- sprintf(
     "Pushed %s commit%s from %s/%s",
     analysis$due,
     if (analysis$due == 1L) "" else "s",
     repo_name,
     analysis$branch
   )
+
+  title <- .notification_commit_title(analysis)
+  if (!is.na(title) && nzchar(title)) {
+    message <- paste0(message, ": ", title)
+  }
+
+  message
+}
+
+.notification_commit_title <- function(analysis) {
+  commits <- analysis$commits
+  if (is.null(commits) || !nrow(commits) || !("title" %in% names(commits))) {
+    return(NA_character_)
+  }
+
+  pos <- match(analysis$due_sha, commits$sha)
+  if (is.na(pos)) {
+    return(NA_character_)
+  }
+
+  commits$title[[pos]]
 }
 
 .notify_push <- function(analysis) {

@@ -1,5 +1,7 @@
 # pusher 0.0.3
 
+* Added commit titles to successful push notification messages.
+
 * Added a `Next push in X minutes` summary line to `overview()`.
 
 * Added commit titles to `upcoming_pushes()` and the `overview()` upcoming
