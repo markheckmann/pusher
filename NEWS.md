@@ -1,0 +1,27 @@
+# pusher 0.0.2
+
+* Added `upcoming_pushes()` to list future unpublished commits across tracked
+  repositories, ordered by the later of their author and committer dates.
+
+* Added `last_pushes()` to show recent successful pushes from the pusher log.
+
+* Regenerated roxygen documentation and exports so all user-facing functions are
+  exported from the package namespace.
+
+# pusher 0.0.1
+
+* Initial release of `pusher`, an R package for tracking local Git repositories
+  and pushing unpublished commits only after their scheduled date has arrived.
+
+* Added repository registration helpers: `add_repo()`, `list_repos()`, and
+  `remove_repo()`.
+
+* Added `status()` and `check_once()` for inspecting unpublished commits and
+  pushing the latest contiguous due commit without pulling, merging, rebasing,
+  force-pushing, or blindly pushing a branch tip.
+
+* Added macOS `launchd` scheduler helpers: `install_scheduler()`,
+  `uninstall_scheduler()`, and `scheduler_status()`.
+
+* Added package tests using temporary Git repositories and isolated pusher state
+  via `PUSHER_HOME`.
