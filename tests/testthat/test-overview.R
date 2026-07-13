@@ -44,6 +44,15 @@ test_that("overview reports when no next push is available", {
   })
 })
 
+test_that("overview human time labels relative dates", {
+  tz <- pusher:::.overview_timezone()
+  now <- as.POSIXct("2026-07-13 10:00:00", tz = tz)
+
+  expect_equal(pusher:::.overview_human_time_one(now + 20 * 60, now), "in 20 minutes")
+  expect_equal(pusher:::.overview_human_time_one(now - 2 * 3600, now), "2 hours ago")
+  expect_equal(pusher:::.overview_human_time_one(now + 26 * 3600, now), "tomorrow at 12:00")
+})
+
 test_that("overview rolls stale scheduler times forward", {
   with_pusher_home({
     check_log <- file.path(Sys.getenv("PUSHER_HOME"), "launchd.out")

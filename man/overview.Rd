@@ -18,5 +18,6 @@ invisibly.
 \description{
 Prints the estimated next check cycle, a countdown to the next commit date,
 the next unpublished commits waiting for their scheduled date, and recent
-successful pushes. Printed timestamps use the system timezone.
+successful pushes. Printed timestamps use human-readable labels in the
+system timezone.
 }

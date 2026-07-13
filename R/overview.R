@@ -77,6 +77,48 @@
   formatted
 }
 
+.overview_human_time_one <- function(x, now = Sys.time()) {
+  if (is.character(x)) {
+    x <- .iso_to_time(x)
+  }
+  if (length(x) == 0 || is.na(x)) {
+    return(NA_character_)
+  }
+
+  seconds <- as.numeric(difftime(x, now, units = "secs"))
+  abs_seconds <- abs(seconds)
+  minutes <- max(1L, ceiling(abs_seconds / 60))
+  hours <- max(1L, round(abs_seconds / 3600))
+  local_date <- as.Date(x, tz = .overview_timezone())
+  today <- as.Date(now, tz = .overview_timezone())
+  local_time <- format(x, "%H:%M", tz = .overview_timezone())
+
+  if (seconds < 0 && abs_seconds < 3600) {
+    return(sprintf("%s minute%s ago", minutes, if (minutes == 1L) "" else "s"))
+  }
+  if (seconds < 0 && identical(local_date, today)) {
+    return(sprintf("%s hour%s ago", hours, if (hours == 1L) "" else "s"))
+  }
+  if (seconds < 0 && identical(local_date, today - 1L)) {
+    return(sprintf("yesterday at %s", local_time))
+  }
+  if (seconds >= 0 && seconds < 3600) {
+    return(sprintf("in %s minute%s", minutes, if (minutes == 1L) "" else "s"))
+  }
+  if (seconds >= 0 && identical(local_date, today)) {
+    return(sprintf("in %s hour%s", hours, if (hours == 1L) "" else "s"))
+  }
+  if (identical(local_date, today + 1L)) {
+    return(sprintf("tomorrow at %s", local_time))
+  }
+
+  format(x, "%Y-%m-%d %H:%M", tz = .overview_timezone())
+}
+
+.overview_human_time <- function(x, now = Sys.time()) {
+  unname(vapply(x, .overview_human_time_one, character(1), now = now))
+}
+
 .overview_scheduler_table <- function(scheduler) {
   if (!nrow(scheduler)) {
     return(data.frame())
@@ -88,8 +130,8 @@
     loaded = scheduler$loaded,
     interval_minutes = scheduler$interval_seconds / 60,
     system_time = .overview_time(Sys.time()),
-    last_check = .overview_time(scheduler$last_check),
-    next_check = .overview_time(scheduler$next_check),
+    last_check = .overview_human_time(scheduler$last_check),
+    next_check = .overview_human_time(scheduler$next_check),
     time_zone = .overview_timezone(),
     stringsAsFactors = FALSE
   )
@@ -109,7 +151,7 @@
   }
 
   data.frame(
-    due_at = .overview_time(upcoming$effective_date),
+    due_at = .overview_human_time(upcoming$effective_date),
     repo = .repo_name(upcoming$repo_root),
     branch = upcoming$branch,
     sha = .short_sha(upcoming$sha),
@@ -143,7 +185,7 @@
   }
 
   data.frame(
-    pushed_at = .overview_time(pushes$timestamp),
+    pushed_at = .overview_human_time(pushes$timestamp),
     repo = .repo_name(pushes$repo),
     branch = pushes$branch,
     sha = .short_sha(pushes$sha),
@@ -166,7 +208,8 @@
 #'
 #' Prints the estimated next check cycle, a countdown to the next commit date,
 #' the next unpublished commits waiting for their scheduled date, and recent
-#' successful pushes. Printed timestamps use the system timezone.
+#' successful pushes. Printed timestamps use human-readable labels in the
+#' system timezone.
 #'
 #' @param upcoming_n Maximum number of upcoming commits to show.
 #' @param last_n Maximum number of recent successful pushes to show.
