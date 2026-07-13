@@ -1,3 +1,9 @@
+# pusher 0.0.3
+
+* Added opt-in macOS notifications for successful pushes. Notifications are off
+  by default and can be toggled with `set_notifications()` and inspected with
+  `notifications_enabled()`.
+
 # pusher 0.0.2
 
 * Added `upcoming_pushes()` to list future unpublished commits across tracked

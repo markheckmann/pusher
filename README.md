@@ -71,6 +71,15 @@ pusher::last_pushes()
 pusher::last_pushes(n = 5)
 ```
 
+Successful push notifications are off by default. On macOS, enable or disable
+them with:
+
+```r
+pusher::notifications_enabled()
+pusher::set_notifications(TRUE)
+pusher::set_notifications(FALSE)
+```
+
 Tracked repository config is written to:
 
 ```text

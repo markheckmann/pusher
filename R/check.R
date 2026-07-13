@@ -80,6 +80,22 @@ check_once <- function(dry_run = TRUE) {
           sha = analysis$due_sha,
           count = analysis$due
         )
+        if (notifications_enabled()) {
+          notified <- tryCatch({
+            .notify_push(analysis)
+            TRUE
+          }, error = function(e) e)
+          if (inherits(notified, "error")) {
+            .log_message(
+              "ERROR",
+              repo = analysis$repo_root,
+              branch = analysis$branch,
+              result = "notification_failed",
+              sha = analysis$due_sha,
+              reason = conditionMessage(notified)
+            )
+          }
+        }
       }
     }
   }

@@ -15,6 +15,10 @@
   file.path(.pusher_dir(), "pusher.log")
 }
 
+.settings_file <- function() {
+  file.path(.pusher_dir(), "settings.json")
+}
+
 .launchd_dir <- function() {
   file.path(.pusher_dir(), "launchd")
 }
