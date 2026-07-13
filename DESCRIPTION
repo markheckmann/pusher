@@ -1,6 +1,6 @@
 Package: pusher
 Title: Push Future-Dated Git Commits When Due
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: person("Mark", "Heckmann", role = c("aut", "cre"), email = "mark@example.com")
 Author: Mark Heckmann [aut, cre]
 Maintainer: Mark Heckmann <mark@example.com>
@@ -9,7 +9,7 @@ Description: Tracks local Git repositories and pushes unpublished commits when
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     jsonlite
 Suggests:

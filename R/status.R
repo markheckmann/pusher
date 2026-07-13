@@ -1,6 +1,7 @@
 #' Show pusher status for all tracked repositories
 #'
 #' @return A data frame with unpublished and due commit counts.
+#' @export
 status <- function() {
   repos <- .read_repos()
   if (!nrow(repos)) {

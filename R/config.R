@@ -47,6 +47,7 @@
 #' @param path Path inside the Git repository or worktree.
 #' @param remote Git remote name.
 #' @return A data frame with all tracked repositories, invisibly.
+#' @export
 add_repo <- function(path = ".", remote = "origin") {
   path <- .normalize_user_path(path)
   repo_root <- .git_repo_root(path)
@@ -77,6 +78,7 @@ add_repo <- function(path = ".", remote = "origin") {
 #' List tracked repositories
 #'
 #' @return A data frame of registered repositories.
+#' @export
 list_repos <- function() {
   .read_repos()
 }
@@ -85,6 +87,7 @@ list_repos <- function() {
 #'
 #' @param path Path originally added, or any path inside the same Git worktree.
 #' @return A data frame with remaining repositories, invisibly.
+#' @export
 remove_repo <- function(path) {
   path <- .normalize_user_path(path)
   repo_root <- tryCatch(.git_repo_root(path), error = function(e) path)

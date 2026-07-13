@@ -40,6 +40,7 @@ Before enabling automatic pushes, inspect what would happen:
 
 ```r
 pusher::status()
+pusher::upcoming_pushes()
 pusher::check_once(dry_run = TRUE)
 ```
 

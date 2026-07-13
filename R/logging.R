@@ -123,6 +123,7 @@
 #'
 #' @param n Maximum number of pushes to return.
 #' @return A data frame of recent successful push log entries, newest first.
+#' @export
 last_pushes <- function(n = 20) {
   if (!is.numeric(n) || length(n) != 1L || is.na(n) || n < 0) {
     stop("n must be a single non-negative number.", call. = FALSE)

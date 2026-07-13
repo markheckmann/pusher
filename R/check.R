@@ -2,6 +2,7 @@
 #'
 #' @param dry_run If `TRUE`, report what would be pushed without pushing.
 #' @return A data frame summarising the run, invisibly.
+#' @export
 check_once <- function(dry_run = TRUE) {
   repos <- .read_repos()
   if (!nrow(repos)) {

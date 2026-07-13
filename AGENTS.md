@@ -18,7 +18,7 @@ Run tests and checks from the package root:
 
 ```sh
 R CMD build .
-R CMD check pusher_0.0.1.tar.gz --no-manual
+R CMD check pusher_*.tar.gz --no-manual
 ```
 
 For local installation:
@@ -30,6 +30,7 @@ R CMD INSTALL .
 ## Implementation Notes
 
 - User-facing functions are exported in `NAMESPACE` and documented in `man/`.
+- Bump `Version` in `DESCRIPTION` whenever preparing a released commit or making larger behavior/API changes.
 - Git interaction is intentionally shell-based via `system2("git", ...)`.
 - Tests use temporary Git repositories and should not touch real user repositories.
 - Use `PUSHER_HOME` in tests to isolate state from `~/.pusher`.

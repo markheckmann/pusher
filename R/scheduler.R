@@ -65,6 +65,7 @@
 #'
 #' @param load If `TRUE`, load the LaunchAgent after writing it.
 #' @return The installed plist path, invisibly.
+#' @export
 install_scheduler <- function(load = TRUE) {
   .require_macos()
   .ensure_pusher_dir()
@@ -92,6 +93,7 @@ install_scheduler <- function(load = TRUE) {
 #' Uninstall the hourly macOS launchd scheduler
 #'
 #' @return The removed plist path, invisibly.
+#' @export
 uninstall_scheduler <- function() {
   .require_macos()
   uid <- .user_uid()
@@ -105,6 +107,7 @@ uninstall_scheduler <- function() {
 #' Show macOS launchd scheduler status
 #'
 #' @return A data frame with scheduler status.
+#' @export
 scheduler_status <- function() {
   installed <- file.exists(.launchd_target())
   loaded <- NA
