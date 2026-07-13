@@ -175,8 +175,16 @@
     return(sprintf("Next push due now: %s", upcoming$title[[1]]))
   }
 
-  minute_label <- if (minutes == 1) "minute" else "minutes"
-  sprintf("Next push in %s %s: %s", minutes, minute_label, upcoming$title[[1]])
+  sprintf("Next push in %s: %s", .overview_duration_label(minutes), upcoming$title[[1]])
+}
+
+.overview_duration_label <- function(minutes) {
+  if (minutes > 120) {
+    hours <- max(1L, round(minutes / 60))
+    return(sprintf("%s hour%s", hours, if (hours == 1L) "" else "s"))
+  }
+
+  sprintf("%s minute%s", minutes, if (minutes == 1L) "" else "s")
 }
 
 .overview_last_pushes_table <- function(pushes) {

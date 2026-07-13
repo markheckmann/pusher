@@ -1,5 +1,8 @@
 # pusher 0.0.4
 
+* Changed the `overview()` next push summary to use rounded hours instead of
+  large minute counts after 120 minutes.
+
 * Added `notification_style()` and `set_notification_style()` to choose between
   standard macOS notification banners and persistent macOS alerts.
 

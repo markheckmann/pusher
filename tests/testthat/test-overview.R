@@ -22,7 +22,7 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
     expect_equal(result$upcoming$title, "commit next.txt")
     expect_equal(result$last_pushes$sha, "def456789")
     expect_equal(result$last_pushes$title, "Fix pushed thing")
-    expect_match(paste(output, collapse = "\n"), "Next push in [0-9]+ minutes: commit next.txt")
+    expect_match(paste(output, collapse = "\n"), "Next push in [0-9]+ hours: commit next.txt")
     expect_match(paste(output, collapse = "\n"), "Next Check Cycle")
     expect_match(paste(output, collapse = "\n"), "system_time")
     expect_match(paste(output, collapse = "\n"), "time_zone")
@@ -45,6 +45,19 @@ test_that("overview reports when no next push is available", {
 
     expect_match(paste(output, collapse = "\n"), "Next push: no future unpublished commits", fixed = TRUE)
   })
+})
+
+test_that("overview next push line switches from minutes to hours", {
+  now <- as.POSIXct("2026-07-13 10:00:00", tz = pusher:::.overview_timezone())
+  upcoming <- data.frame(
+    effective_date = format(c(now + 120 * 60, now + 121 * 60, now + 641 * 60), "%Y-%m-%dT%H:%M:%S%z", tz = "UTC"),
+    title = c("Two hours", "Just over two hours", "Long wait"),
+    stringsAsFactors = FALSE
+  )
+
+  expect_equal(pusher:::.overview_next_push_line(upcoming[1, , drop = FALSE], now), "Next push in 120 minutes: Two hours")
+  expect_equal(pusher:::.overview_next_push_line(upcoming[2, , drop = FALSE], now), "Next push in 2 hours: Just over two hours")
+  expect_equal(pusher:::.overview_next_push_line(upcoming[3, , drop = FALSE], now), "Next push in 11 hours: Long wait")
 })
 
 test_that("overview human time labels relative dates", {
