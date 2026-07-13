@@ -153,9 +153,9 @@
 }
 
 .print_overview_section <- function(title, x, empty) {
-  cat("\n", title, "\n", sep = "")
+  cat("\n", cli::rule(title), "\n", sep = "")
   if (!nrow(x)) {
-    cat(empty, "\n", sep = "")
+    cat(cli::col_blue(paste0("i ", empty)), "\n", sep = "")
     return(invisible(NULL))
   }
   print(x, row.names = FALSE)
@@ -185,8 +185,9 @@ overview <- function(upcoming_n = 5, last_n = 5) {
   upcoming <- upcoming_pushes(n = upcoming_n)
   pushes <- last_pushes(n = last_n)
 
-  cat("Pusher Overview\n")
-  cat(.overview_next_push_line(upcoming), "\n", sep = "")
+  next_push_line <- .overview_next_push_line(upcoming)
+  cat(cli::rule("Pusher Overview"), "\n", sep = "")
+  cat(cli::col_green(next_push_line), "\n", sep = "")
   .print_overview_section("Next Check Cycle", .overview_scheduler_table(scheduler), "Scheduler status is unavailable.")
   .print_overview_section("Next Commits To Push", .overview_upcoming_table(upcoming), "No future unpublished commits.")
   .print_overview_section("Last Commits Pushed", .overview_last_pushes_table(pushes), "No successful pushes logged.")
