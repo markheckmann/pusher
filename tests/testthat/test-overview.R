@@ -10,10 +10,10 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
 
     writeLines("last scheduler run", file.path(Sys.getenv("PUSHER_HOME"), "launchd.out"))
     log_path <- file.path(Sys.getenv("PUSHER_HOME"), "pusher.log")
-    writeLines(
-      "2026-07-13T12:00:00+0000 INFO repo=/tmp/repo branch=main result=pushed sha=def456789 count=1",
-      log_path
-    )
+    writeLines(sprintf(
+      "2026-07-13T12:00:00+0000 INFO repo=%s branch=main result=pushed sha=def456789 title=\"Fix pushed thing\" count=1",
+      fixture$repo
+    ), log_path)
 
     output <- utils::capture.output(result <- pusher::overview(upcoming_n = 1, last_n = 1))
 
@@ -21,6 +21,7 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
     expect_equal(result$upcoming$sha, next_sha)
     expect_equal(result$upcoming$title, "commit next.txt")
     expect_equal(result$last_pushes$sha, "def456789")
+    expect_equal(result$last_pushes$title, "Fix pushed thing")
     expect_match(paste(output, collapse = "\n"), "Next push in [0-9]+ minutes: commit next.txt")
     expect_match(paste(output, collapse = "\n"), "Next Check Cycle")
     expect_match(paste(output, collapse = "\n"), "system_time")
@@ -28,6 +29,8 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
     expect_match(paste(output, collapse = "\n"), "Next Commits To Push")
     expect_match(paste(output, collapse = "\n"), "commit next.txt")
     expect_match(paste(output, collapse = "\n"), "Last Commits Pushed")
+    expect_match(paste(output, collapse = "\n"), "Fix pushed thing")
+    expect_match(paste(output, collapse = "\n"), "origin/main", fixed = TRUE)
   })
 })
 

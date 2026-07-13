@@ -1,5 +1,10 @@
 # pusher 0.0.3
 
+* Added commit titles to `last_pushes()` and the `overview()` last pushed
+  commits section, including best-effort title lookup for older logs.
+
+* Added the tracked remote to the `overview()` last pushed commits section.
+
 * Changed `overview()` printed dates to human-readable local labels such as
   `in 20 minutes`, `tomorrow at 12:00`, and `2 hours ago`.
 

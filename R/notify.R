@@ -8,26 +8,12 @@
     analysis$branch
   )
 
-  title <- .notification_commit_title(analysis)
+  title <- .analysis_due_title(analysis)
   if (!is.na(title) && nzchar(title)) {
     message <- paste0(message, ": ", title)
   }
 
   message
-}
-
-.notification_commit_title <- function(analysis) {
-  commits <- analysis$commits
-  if (is.null(commits) || !nrow(commits) || !("title" %in% names(commits))) {
-    return(NA_character_)
-  }
-
-  pos <- match(analysis$due_sha, commits$sha)
-  if (is.na(pos)) {
-    return(NA_character_)
-  }
-
-  commits$title[[pos]]
 }
 
 .notify_push <- function(analysis) {

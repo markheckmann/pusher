@@ -48,6 +48,7 @@
     branch = character(),
     result = character(),
     sha = character(),
+    title = character(),
     count = integer(),
     reason = character(),
     line = character(),
@@ -88,6 +89,7 @@
     branch = fields$branch %||% NA_character_,
     result = fields$result %||% NA_character_,
     sha = fields$sha %||% NA_character_,
+    title = fields$title %||% NA_character_,
     count = suppressWarnings(as.integer(fields$count %||% NA_character_)),
     reason = fields$reason %||% NA_character_,
     line = line,
@@ -119,6 +121,30 @@
   do.call(rbind, entries)
 }
 
+.log_commit_title <- function(repo, sha) {
+  if (is.na(repo) || is.na(sha) || !nzchar(repo) || !nzchar(sha) || !dir.exists(repo)) {
+    return(NA_character_)
+  }
+
+  title <- tryCatch(.git_output(repo, c("show", "-s", "--format=%s", sha))[[1]], error = function(e) NA_character_)
+  if (length(title) == 0 || is.na(title) || !nzchar(title)) {
+    return(NA_character_)
+  }
+
+  title
+}
+
+.fill_push_titles <- function(pushes) {
+  missing <- is.na(pushes$title) | !nzchar(pushes$title)
+  if (!any(missing)) {
+    return(pushes)
+  }
+
+  rows <- which(missing)
+  pushes$title[rows] <- vapply(rows, function(i) .log_commit_title(pushes$repo[[i]], pushes$sha[[i]]), character(1))
+  pushes
+}
+
 #' List recent successful pushes
 #'
 #' @param n Maximum number of pushes to return.
@@ -136,5 +162,5 @@ last_pushes <- function(n = 20) {
   }
 
   keep <- utils::tail(seq_len(nrow(pushes)), n)
-  pushes[rev(keep), , drop = FALSE]
+  .fill_push_titles(pushes[rev(keep), , drop = FALSE])
 }

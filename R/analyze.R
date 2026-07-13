@@ -39,6 +39,20 @@
   )
 }
 
+.analysis_due_title <- function(analysis) {
+  commits <- analysis$commits
+  if (is.null(commits) || !nrow(commits) || !("title" %in% names(commits))) {
+    return(NA_character_)
+  }
+
+  pos <- match(analysis$due_sha, commits$sha)
+  if (is.na(pos)) {
+    return(NA_character_)
+  }
+
+  commits$title[[pos]]
+}
+
 .analysis_row <- function(repo, analysis = NULL, error = NULL) {
   if (!is.null(error)) {
     return(data.frame(

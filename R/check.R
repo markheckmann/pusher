@@ -78,6 +78,7 @@ check_once <- function(dry_run = TRUE) {
           branch = analysis$branch,
           result = "pushed",
           sha = analysis$due_sha,
+          title = .analysis_due_title(analysis),
           count = analysis$due
         )
         if (notifications_enabled()) {

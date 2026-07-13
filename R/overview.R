@@ -189,9 +189,28 @@
     repo = .repo_name(pushes$repo),
     branch = pushes$branch,
     sha = .short_sha(pushes$sha),
-    commits = pushes$count,
+    title = pushes$title,
+    remote = .overview_push_remotes(pushes),
     stringsAsFactors = FALSE
   )
+}
+
+.overview_push_remotes <- function(pushes) {
+  repos <- .read_repos()
+  if (!nrow(pushes)) {
+    return(character())
+  }
+  if (!nrow(repos)) {
+    return(rep(NA_character_, nrow(pushes)))
+  }
+
+  vapply(seq_len(nrow(pushes)), function(i) {
+    hit <- repos[repos$repo_root == pushes$repo[[i]] & repos$branch == pushes$branch[[i]], , drop = FALSE]
+    if (!nrow(hit)) {
+      return(NA_character_)
+    }
+    paste0(hit$remote[[1]], "/", hit$remote_branch[[1]])
+  }, character(1))
 }
 
 .print_overview_section <- function(title, x, empty) {
