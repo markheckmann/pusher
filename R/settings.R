@@ -1,5 +1,8 @@
 .default_settings <- function() {
-  list(notifications = FALSE)
+  list(
+    notifications = FALSE,
+    notification_style = "banner"
+  )
 }
 
 .read_settings <- function() {
@@ -12,6 +15,11 @@
   defaults <- .default_settings()
   defaults[names(settings)] <- settings
   defaults$notifications <- isTRUE(defaults$notifications)
+  if (!is.character(defaults$notification_style) ||
+    length(defaults$notification_style) != 1L ||
+    !defaults$notification_style %in% c("banner", "alert")) {
+    defaults$notification_style <- "banner"
+  }
   defaults
 }
 
@@ -45,4 +53,28 @@ set_notifications <- function(enabled = TRUE) {
   settings$notifications <- enabled
   .write_settings(settings)
   invisible(enabled)
+}
+
+#' Show the successful push notification style
+#'
+#' @return Either `"banner"` for Notification Center banners or `"alert"` for
+#'   persistent macOS alerts.
+#' @export
+notification_style <- function() {
+  .read_settings()$notification_style
+}
+
+#' Set the successful push notification style
+#'
+#' @param style `"banner"` for a standard Notification Center banner, or
+#'   `"alert"` for a persistent macOS alert that must be dismissed.
+#' @return The updated notification style, invisibly.
+#' @export
+set_notification_style <- function(style = c("banner", "alert")) {
+  style <- match.arg(style)
+
+  settings <- .read_settings()
+  settings$notification_style <- style
+  .write_settings(settings)
+  invisible(style)
 }

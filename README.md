@@ -87,8 +87,14 @@ them with:
 ```r
 pusher::notifications_enabled()
 pusher::set_notifications(TRUE)
+pusher::notification_style()
+pusher::set_notification_style("alert")
+pusher::set_notification_style("banner")
 pusher::set_notifications(FALSE)
 ```
+
+Use `"banner"` for standard Notification Center banners, or `"alert"` for a
+persistent macOS alert that must be dismissed.
 
 Tracked repository config is written to:
 

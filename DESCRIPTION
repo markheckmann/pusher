@@ -1,6 +1,6 @@
 Package: pusher
 Title: Push Future-Dated Git Commits When Due
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: person("Mark", "Heckmann", role = c("aut", "cre"), email = "mark@example.com")
 Author: Mark Heckmann [aut, cre]
 Maintainer: Mark Heckmann <mark@example.com>

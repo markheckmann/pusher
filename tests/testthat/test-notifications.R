@@ -1,12 +1,31 @@
 test_that("notifications are disabled by default and can be toggled", {
   with_pusher_home({
     expect_false(pusher::notifications_enabled())
+    expect_equal(pusher::notification_style(), "banner")
 
     expect_invisible(pusher::set_notifications(TRUE))
     expect_true(pusher::notifications_enabled())
 
     expect_invisible(pusher::set_notifications(FALSE))
     expect_false(pusher::notifications_enabled())
+  })
+})
+
+test_that("notification style can be toggled", {
+  with_pusher_home({
+    expect_equal(pusher::notification_style(), "banner")
+
+    expect_invisible(pusher::set_notification_style("alert"))
+    expect_equal(pusher::notification_style(), "alert")
+
+    expect_invisible(pusher::set_notification_style("banner"))
+    expect_equal(pusher::notification_style(), "banner")
+  })
+})
+
+test_that("set_notification_style validates input", {
+  with_pusher_home({
+    expect_error(pusher::set_notification_style("sticky"), "should be one of")
   })
 })
 
@@ -67,6 +86,16 @@ test_that("notification message includes the pushed commit title", {
     pusher:::.notification_message(analysis),
     "Pushed 1 commit from repo/main: Push this title"
   )
+})
+
+test_that("notification scripts support banners and persistent alerts", {
+  banner <- pusher:::.notification_script("Pushed commit", "banner")
+  alert <- pusher:::.notification_script("Pushed commit", "alert")
+
+  expect_match(banner, "display notification", fixed = TRUE)
+  expect_match(banner, "with title \"pusher\"", fixed = TRUE)
+  expect_match(alert, "display alert", fixed = TRUE)
+  expect_match(alert, "message \"Pushed commit\"", fixed = TRUE)
 })
 
 test_that("osascript runner preserves script arguments with spaces", {

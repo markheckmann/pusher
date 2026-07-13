@@ -1,3 +1,8 @@
+# pusher 0.0.4
+
+* Added `notification_style()` and `set_notification_style()` to choose between
+  standard macOS notification banners and persistent macOS alerts.
+
 # pusher 0.0.3
 
 * Added commit titles to `last_pushes()` and the `overview()` last pushed

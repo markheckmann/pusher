@@ -30,13 +30,26 @@
     stop("Push notifications currently support macOS only.", call. = FALSE)
   }
 
-  result <- .run_osascript(sprintf('display notification %s with title "pusher"', .applescript_quote(message)))
+  result <- .run_osascript(.notification_script(message, notification_style()))
   code <- attr(result, "status")
   if (!is.null(code) && code != 0L) {
     stop(sprintf("osascript notification failed: %s", paste(result, collapse = "\n")), call. = FALSE)
   }
 
   invisible(TRUE)
+}
+
+.notification_script <- function(message, style) {
+  style <- match.arg(style, c("banner", "alert"))
+  if (identical(style, "alert")) {
+    return(sprintf(
+      "display alert %s message %s as informational",
+      .applescript_quote("pusher"),
+      .applescript_quote(message)
+    ))
+  }
+
+  sprintf("display notification %s with title %s", .applescript_quote(message), .applescript_quote("pusher"))
 }
 
 .run_osascript <- function(script) {
