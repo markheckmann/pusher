@@ -1,0 +1,10 @@
+\name{add_repo}
+\alias{add_repo}
+\title{Add a Git repository or worktree to pusher}
+\usage{add_repo(path = ".", remote = "origin")}
+\arguments{
+\item{path}{Path inside the Git repository or worktree.}
+\item{remote}{Git remote name.}
+}
+\value{A data frame with all tracked repositories, invisibly.}
+\description{The current branch at add time is stored and used for future checks.}
