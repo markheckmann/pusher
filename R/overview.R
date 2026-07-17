@@ -187,6 +187,11 @@
   sprintf("%s minute%s", minutes, if (minutes == 1L) "" else "s")
 }
 
+.overview_pushes_in_line <- function(upcoming) {
+  count <- nrow(upcoming)
+  sprintf("Pushes in line: %s", count)
+}
+
 .overview_last_pushes_table <- function(pushes) {
   if (!nrow(pushes)) {
     return(data.frame())
@@ -256,8 +261,10 @@ overview <- function(upcoming_n = 5, last_n = 5) {
   pushes <- last_pushes(n = last_n)
 
   next_push_line <- .overview_next_push_line(upcoming)
+  pushes_in_line <- .overview_pushes_in_line(upcoming)
   cat(cli::rule("Pusher Overview"), "\n", sep = "")
   cat(cli::col_green(next_push_line), "\n", sep = "")
+  cat(cli::col_cyan(pushes_in_line), "\n", sep = "")
   .print_overview_section("Next Check Cycle", .overview_scheduler_table(scheduler), "Scheduler status is unavailable.")
   .print_overview_section("Next Commits To Push", .overview_upcoming_table(upcoming), "No future unpublished commits.")
   .print_overview_section("Last Commits Pushed", .overview_last_pushes_table(pushes), "No successful pushes logged.")

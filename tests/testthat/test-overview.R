@@ -23,6 +23,7 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
     expect_equal(result$last_pushes$sha, "def456789")
     expect_equal(result$last_pushes$title, "Fix pushed thing")
     expect_match(paste(output, collapse = "\n"), "Next push in [0-9]+ hours: commit next.txt")
+    expect_match(paste(output, collapse = "\n"), "Pushes in line: 1", fixed = TRUE)
     expect_match(paste(output, collapse = "\n"), "Next Check Cycle")
     expect_match(paste(output, collapse = "\n"), "system_time")
     expect_match(paste(output, collapse = "\n"), "time_zone")
@@ -44,7 +45,13 @@ test_that("overview reports when no next push is available", {
     output <- utils::capture.output(pusher::overview(upcoming_n = 0, last_n = 0))
 
     expect_match(paste(output, collapse = "\n"), "Next push: no future unpublished commits", fixed = TRUE)
+    expect_match(paste(output, collapse = "\n"), "Pushes in line: 0", fixed = TRUE)
   })
+})
+
+test_that("overview push line counts visible queued pushes", {
+  expect_equal(pusher:::.overview_pushes_in_line(data.frame()), "Pushes in line: 0")
+  expect_equal(pusher:::.overview_pushes_in_line(data.frame(sha = c("a", "b"))), "Pushes in line: 2")
 })
 
 test_that("overview next push line switches from minutes to hours", {
