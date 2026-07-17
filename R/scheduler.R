@@ -1,13 +1,32 @@
 .launchd_label <- function() {
+  "com.pusher.scheduler"
+}
+
+.legacy_launchd_label <- function() {
   "com.pusher.hourly"
 }
 
 .scheduler_interval_seconds <- function() {
-  1800L
+  scheduler_interval() * 60L
 }
 
-.launchd_target <- function() {
-  file.path(path.expand("~"), "Library", "LaunchAgents", paste0(.launchd_label(), ".plist"))
+.apply_scheduler_interval <- function() {
+  if (!identical(Sys.info()[["sysname"]], "Darwin") ||
+    (!file.exists(.launchd_target()) && !file.exists(.legacy_launchd_target()))) {
+    return(invisible(FALSE))
+  }
+
+  status <- scheduler_status()
+  install_scheduler(load = isTRUE(status$loaded[[1]]))
+  invisible(TRUE)
+}
+
+.launchd_target <- function(label = .launchd_label()) {
+  file.path(path.expand("~"), "Library", "LaunchAgents", paste0(label, ".plist"))
+}
+
+.legacy_launchd_target <- function() {
+  .launchd_target(.legacy_launchd_label())
 }
 
 .plist_escape <- function(x) {
@@ -65,6 +84,15 @@
   uid[[1]]
 }
 
+.remove_launchd_agent <- function(label, target, uid = .user_uid()) {
+  system2("launchctl", c("bootout", paste0("gui/", uid), target), stdout = FALSE, stderr = FALSE)
+  system2("launchctl", c("bootout", paste0("gui/", uid, "/", label)), stdout = FALSE, stderr = FALSE)
+  if (file.exists(target)) {
+    unlink(target)
+  }
+  invisible(target)
+}
+
 #' Install the macOS launchd scheduler
 #'
 #' @param load If `TRUE`, load the LaunchAgent after writing it.
@@ -75,6 +103,9 @@ install_scheduler <- function(load = TRUE) {
   .ensure_pusher_dir()
   dir.create(.launchd_dir(), recursive = TRUE, showWarnings = FALSE)
   dir.create(dirname(.launchd_target()), recursive = TRUE, showWarnings = FALSE)
+  uid <- .user_uid()
+
+  .remove_launchd_agent(.legacy_launchd_label(), .legacy_launchd_target(), uid)
 
   plist <- .scheduler_plist()
   staged <- file.path(.launchd_dir(), paste0(.launchd_label(), ".plist"))
@@ -82,7 +113,6 @@ install_scheduler <- function(load = TRUE) {
   writeLines(plist, .launchd_target(), useBytes = TRUE)
 
   if (load) {
-    uid <- .user_uid()
     system2("launchctl", c("bootout", paste0("gui/", uid), .launchd_target()), stdout = FALSE, stderr = FALSE)
     result <- system2("launchctl", c("bootstrap", paste0("gui/", uid), .launchd_target()), stdout = TRUE, stderr = TRUE)
     code <- attr(result, "status")
@@ -101,10 +131,8 @@ install_scheduler <- function(load = TRUE) {
 uninstall_scheduler <- function() {
   .require_macos()
   uid <- .user_uid()
-  system2("launchctl", c("bootout", paste0("gui/", uid), .launchd_target()), stdout = FALSE, stderr = FALSE)
-  if (file.exists(.launchd_target())) {
-    unlink(.launchd_target())
-  }
+  .remove_launchd_agent(.launchd_label(), .launchd_target(), uid)
+  .remove_launchd_agent(.legacy_launchd_label(), .legacy_launchd_target(), uid)
   invisible(.launchd_target())
 }
 
@@ -117,9 +145,8 @@ scheduler_status <- function() {
   loaded <- NA
 
   if (identical(Sys.info()[["sysname"]], "Darwin")) {
-    result <- system2("launchctl", c("print", paste0("gui/", .user_uid(), "/", .launchd_label())), stdout = TRUE, stderr = TRUE)
-    code <- attr(result, "status")
-    loaded <- is.null(code) || code == 0L
+    code <- system2("launchctl", c("print", paste0("gui/", .user_uid(), "/", .launchd_label())), stdout = FALSE, stderr = FALSE)
+    loaded <- identical(code, 0L)
   }
 
   data.frame(

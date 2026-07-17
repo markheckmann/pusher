@@ -1,5 +1,13 @@
 # pusher 0.0.4
 
+* Added `scheduler_interval()` and `set_scheduler_interval()` to configure how
+  often the macOS scheduler checks for due commits. Updating the interval also
+  updates an installed LaunchAgent automatically.
+
+* Renamed the macOS LaunchAgent label from `com.pusher.hourly` to
+  `com.pusher.scheduler`; installing or uninstalling the scheduler removes the
+  old LaunchAgent if present.
+
 * Added a `Last push` summary line to `overview()`.
 
 * Added a `Pushes in line` count to `overview()`.

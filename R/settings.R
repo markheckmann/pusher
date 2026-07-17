@@ -1,7 +1,8 @@
 .default_settings <- function() {
   list(
     notifications = FALSE,
-    notification_style = "banner"
+    notification_style = "banner",
+    scheduler_interval_minutes = 30L
   )
 }
 
@@ -20,7 +21,20 @@
     !defaults$notification_style %in% c("banner", "alert")) {
     defaults$notification_style <- "banner"
   }
+  if (!.valid_scheduler_interval(defaults$scheduler_interval_minutes)) {
+    defaults$scheduler_interval_minutes <- 30L
+  }
+  defaults$scheduler_interval_minutes <- as.integer(defaults$scheduler_interval_minutes)
   defaults
+}
+
+.valid_scheduler_interval <- function(minutes) {
+  is.numeric(minutes) &&
+    length(minutes) == 1L &&
+    !is.na(minutes) &&
+    is.finite(minutes) &&
+    minutes > 0 &&
+    minutes == as.integer(minutes)
 }
 
 .write_settings <- function(settings) {
@@ -77,4 +91,41 @@ set_notification_style <- function(style = c("banner", "alert")) {
   settings$notification_style <- style
   .write_settings(settings)
   invisible(style)
+}
+
+#' Show the scheduler interval
+#'
+#' @return The scheduler interval in minutes.
+#' @export
+scheduler_interval <- function() {
+  .read_settings()$scheduler_interval_minutes
+}
+
+#' Set the scheduler interval
+#'
+#' @param minutes Number of minutes between scheduler checks. Must be a positive
+#'   whole number.
+#' @param apply If `TRUE`, update the installed macOS LaunchAgent immediately
+#'   when it is already installed. If the LaunchAgent is currently loaded, it is
+#'   reloaded with the new interval.
+#' @return The updated scheduler interval in minutes, invisibly.
+#' @export
+set_scheduler_interval <- function(minutes, apply = TRUE) {
+  if (!.valid_scheduler_interval(minutes)) {
+    stop("minutes must be a single positive whole number.", call. = FALSE)
+  }
+  if (!is.logical(apply) || length(apply) != 1L || is.na(apply)) {
+    stop("apply must be TRUE or FALSE.", call. = FALSE)
+  }
+
+  minutes <- as.integer(minutes)
+  settings <- .read_settings()
+  settings$scheduler_interval_minutes <- minutes
+  .write_settings(settings)
+
+  if (apply) {
+    .apply_scheduler_interval()
+  }
+
+  invisible(minutes)
 }

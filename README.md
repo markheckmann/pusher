@@ -110,6 +110,14 @@ Install a LaunchAgent that checks every 30 minutes:
 pusher::install_scheduler()
 ```
 
+Change the check interval. If the LaunchAgent is already installed, it is
+rewritten automatically and reloaded when currently loaded:
+
+```r
+pusher::scheduler_interval()
+pusher::set_scheduler_interval(15)
+```
+
 Check scheduler status:
 
 ```r
@@ -125,11 +133,11 @@ pusher::uninstall_scheduler()
 The LaunchAgent is installed at:
 
 ```text
-~/Library/LaunchAgents/com.pusher.hourly.plist
+~/Library/LaunchAgents/com.pusher.scheduler.plist
 ```
 
 A copy is stored at:
 
 ```text
-~/.pusher/launchd/com.pusher.hourly.plist
+~/.pusher/launchd/com.pusher.scheduler.plist
 ```
