@@ -1,5 +1,7 @@
 # pusher 0.0.4
 
+* Added a `Last push` summary line to `overview()`.
+
 * Added a `Pushes in line` count to `overview()`.
 
 * Changed the `overview()` next push summary to use rounded hours instead of

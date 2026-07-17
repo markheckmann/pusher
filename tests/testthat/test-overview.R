@@ -22,8 +22,10 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
     expect_equal(result$upcoming$title, "commit next.txt")
     expect_equal(result$last_pushes$sha, "def456789")
     expect_equal(result$last_pushes$title, "Fix pushed thing")
-    expect_match(paste(output, collapse = "\n"), "Next push in [0-9]+ hours: commit next.txt")
-    expect_match(paste(output, collapse = "\n"), "Pushes in line: 1", fixed = TRUE)
+    summary_lines <- output[1:4]
+    expect_match(summary_lines[[2]], "Last push .*: Fix pushed thing")
+    expect_match(summary_lines[[3]], "Next push in [0-9]+ hours: commit next.txt")
+    expect_match(summary_lines[[4]], "Pushes in line: 1", fixed = TRUE)
     expect_match(paste(output, collapse = "\n"), "Next Check Cycle")
     expect_match(paste(output, collapse = "\n"), "system_time")
     expect_match(paste(output, collapse = "\n"), "time_zone")
@@ -46,12 +48,28 @@ test_that("overview reports when no next push is available", {
 
     expect_match(paste(output, collapse = "\n"), "Next push: no future unpublished commits", fixed = TRUE)
     expect_match(paste(output, collapse = "\n"), "Pushes in line: 0", fixed = TRUE)
+    expect_match(paste(output, collapse = "\n"), "Last push: none recorded", fixed = TRUE)
   })
 })
 
 test_that("overview push line counts visible queued pushes", {
   expect_equal(pusher:::.overview_pushes_in_line(data.frame()), "Pushes in line: 0")
   expect_equal(pusher:::.overview_pushes_in_line(data.frame(sha = c("a", "b"))), "Pushes in line: 2")
+})
+
+test_that("overview last push line reports recent push", {
+  now <- as.POSIXct("2026-07-13 10:00:00", tz = pusher:::.overview_timezone())
+  pushes <- data.frame(
+    timestamp = format(now - 30 * 60, "%Y-%m-%dT%H:%M:%S%z", tz = "UTC"),
+    sha = "abcdef123",
+    title = "Recently pushed",
+    stringsAsFactors = FALSE
+  )
+
+  expect_equal(pusher:::.overview_last_push_line(pushes, now), "Last push 30 minutes ago: Recently pushed")
+  pushes$title[[1]] <- NA_character_
+  expect_match(pusher:::.overview_last_push_line(pushes, now), "Last push .*: abcdef1")
+  expect_equal(pusher:::.overview_last_push_line(pushes[FALSE, , drop = FALSE]), "Last push: none recorded.")
 })
 
 test_that("overview next push line switches from minutes to hours", {

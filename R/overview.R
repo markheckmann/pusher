@@ -192,6 +192,19 @@
   sprintf("Pushes in line: %s", count)
 }
 
+.overview_last_push_line <- function(pushes, now = Sys.time()) {
+  if (!nrow(pushes)) {
+    return("Last push: none recorded.")
+  }
+
+  title <- pushes$title[[1]]
+  if (is.na(title) || !nzchar(title)) {
+    title <- .short_sha(pushes$sha[[1]])
+  }
+
+  sprintf("Last push %s: %s", .overview_human_time(pushes$timestamp[[1]], now), title)
+}
+
 .overview_last_pushes_table <- function(pushes) {
   if (!nrow(pushes)) {
     return(data.frame())
@@ -262,7 +275,9 @@ overview <- function(upcoming_n = 5, last_n = 5) {
 
   next_push_line <- .overview_next_push_line(upcoming)
   pushes_in_line <- .overview_pushes_in_line(upcoming)
+  last_push_line <- .overview_last_push_line(pushes)
   cat(cli::rule("Pusher Overview"), "\n", sep = "")
+  cat(cli::col_magenta(last_push_line), "\n", sep = "")
   cat(cli::col_green(next_push_line), "\n", sep = "")
   cat(cli::col_cyan(pushes_in_line), "\n", sep = "")
   .print_overview_section("Next Check Cycle", .overview_scheduler_table(scheduler), "Scheduler status is unavailable.")
