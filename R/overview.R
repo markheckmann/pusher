@@ -239,6 +239,22 @@
   }, character(1))
 }
 
+.overview_summary_lines <- function(upcoming, pushes, now = Sys.time()) {
+  c(
+    .overview_last_push_line(pushes, now),
+    .overview_next_push_line(upcoming, now),
+    .overview_pushes_in_line(upcoming)
+  )
+}
+
+.print_overview_summary <- function(lines) {
+  cat(cli::rule("Pusher Overview"), "\n", sep = "")
+  cat(cli::col_magenta(lines[[1]]), "\n", sep = "")
+  cat(cli::col_green(lines[[2]]), "\n", sep = "")
+  cat(cli::col_cyan(lines[[3]]), "\n", sep = "")
+  invisible(lines)
+}
+
 .print_overview_section <- function(title, x, empty) {
   cat("\n", cli::rule(title), "\n", sep = "")
   if (!nrow(x)) {
@@ -273,13 +289,7 @@ overview <- function(upcoming_n = 5, last_n = 5) {
   upcoming <- upcoming_pushes(n = upcoming_n)
   pushes <- last_pushes(n = last_n)
 
-  next_push_line <- .overview_next_push_line(upcoming)
-  pushes_in_line <- .overview_pushes_in_line(upcoming)
-  last_push_line <- .overview_last_push_line(pushes)
-  cat(cli::rule("Pusher Overview"), "\n", sep = "")
-  cat(cli::col_magenta(last_push_line), "\n", sep = "")
-  cat(cli::col_green(next_push_line), "\n", sep = "")
-  cat(cli::col_cyan(pushes_in_line), "\n", sep = "")
+  .print_overview_summary(.overview_summary_lines(upcoming, pushes))
   .print_overview_section("Next Check Cycle", .overview_scheduler_table(scheduler), "Scheduler status is unavailable.")
   .print_overview_section("Next Commits To Push", .overview_upcoming_table(upcoming), "No future unpublished commits.")
   .print_overview_section("Last Commits Pushed", .overview_last_pushes_table(pushes), "No successful pushes logged.")
@@ -289,4 +299,18 @@ overview <- function(upcoming_n = 5, last_n = 5) {
     upcoming = upcoming,
     last_pushes = pushes
   ))
+}
+
+#' Show the pusher overview summary
+#'
+#' Prints only the `Pusher Overview` heading and the three management summary
+#' lines from [overview()]: last push, next push, and pushes in line.
+#'
+#' @return The three summary lines, invisibly.
+#' @export
+overview_summary <- function() {
+  upcoming <- upcoming_pushes(n = Inf)
+  pushes <- last_pushes(n = 1)
+
+  .print_overview_summary(.overview_summary_lines(upcoming, pushes))
 }

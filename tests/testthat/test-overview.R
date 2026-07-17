@@ -42,6 +42,36 @@ test_that("overview validates counts", {
   expect_error(pusher::overview(last_n = -1), "last_n")
 })
 
+test_that("overview_summary prints only the management summary", {
+  with_pusher_home({
+    fixture <- make_repo()
+    commit_file(fixture$repo, "initial.txt", "initial", "2020-01-01T00:00:00+0000")
+    git(fixture$repo, c("push", "-u", "origin", "main"))
+
+    next_date <- format(Sys.time() + 86400, "%Y-%m-%dT%H:%M:%S%z")
+    commit_file(fixture$repo, "next.txt", "next", next_date)
+    pusher::add_repo(fixture$repo)
+
+    log_path <- file.path(Sys.getenv("PUSHER_HOME"), "pusher.log")
+    writeLines(sprintf(
+      "2026-07-13T12:00:00+0000 INFO repo=%s branch=main result=pushed sha=def456789 title=\"Fix pushed thing\" count=1",
+      fixture$repo
+    ), log_path)
+
+    output <- utils::capture.output(lines <- pusher::overview_summary())
+
+    expect_length(lines, 3)
+    expect_match(lines[[1]], "Last push .*: Fix pushed thing")
+    expect_match(lines[[2]], "Next push in [0-9]+ hours: commit next.txt")
+    expect_equal(lines[[3]], "Pushes in line: 1")
+    expect_equal(length(output), 4)
+    expect_match(output[[1]], "Pusher Overview", fixed = TRUE)
+    expect_false(any(grepl("Next Check Cycle", output, fixed = TRUE)))
+    expect_false(any(grepl("Next Commits To Push", output, fixed = TRUE)))
+    expect_false(any(grepl("Last Commits Pushed", output, fixed = TRUE)))
+  })
+})
+
 test_that("overview reports when no next push is available", {
   with_pusher_home({
     output <- utils::capture.output(pusher::overview(upcoming_n = 0, last_n = 0))

@@ -1,5 +1,8 @@
 # pusher 0.0.4
 
+* Added `overview_summary()` to print only the `overview()` management summary
+  lines.
+
 * Added `scheduler_interval()` and `set_scheduler_interval()` to configure how
   often the macOS scheduler checks for due commits. Updating the interval also
   updates an installed LaunchAgent automatically.
