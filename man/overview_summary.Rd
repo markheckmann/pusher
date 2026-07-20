@@ -10,6 +10,6 @@ overview_summary()
 The three summary lines, invisibly.
 }
 \description{
-Prints only the \code{Pusher Overview} heading and the three management summary
+Prints only the \verb{Pusher Overview} heading and the three management summary
 lines from \code{\link[=overview]{overview()}}: last push, next push, and pushes in line.
 }
