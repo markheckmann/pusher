@@ -1,4 +1,4 @@
-test_that("upcoming_pushes returns future commits ordered by effective date", {
+test_that("upcoming_pushes returns unpublished commits ordered by push priority", {
   with_pusher_home({
     fixture <- make_repo()
     commit_file(fixture$repo, "initial.txt", "initial", "2020-01-01T00:00:00+0000")
@@ -13,11 +13,30 @@ test_that("upcoming_pushes returns future commits ordered by effective date", {
     pusher::add_repo(fixture$repo)
     upcoming <- pusher::upcoming_pushes()
 
-    expect_equal(upcoming$sha, c(sooner_sha, later_sha))
-    expect_equal(upcoming$title, c("commit sooner.txt", "commit later.txt"))
-    expect_false(due_sha %in% upcoming$sha)
-    expect_equal(upcoming$position, c(3L, 2L))
+    expect_equal(upcoming$sha, c(due_sha, sooner_sha, later_sha))
+    expect_equal(upcoming$title, c("commit due.txt", "commit sooner.txt", "commit later.txt"))
+    expect_equal(upcoming$state, c("due", "waiting", "waiting"))
+    expect_equal(upcoming$position, c(1L, 3L, 2L))
     expect_true(all(upcoming$effective_date == sort(upcoming$effective_date)))
+  })
+})
+
+test_that("upcoming_pushes marks overdue commits blocked by earlier future commits", {
+  with_pusher_home({
+    fixture <- make_repo()
+    commit_file(fixture$repo, "initial.txt", "initial", "2020-01-01T00:00:00+0000")
+    git(fixture$repo, c("push", "-u", "origin", "main"))
+
+    future <- format(Sys.time() + 86400, "%Y-%m-%dT%H:%M:%S%z")
+    future_sha <- commit_file(fixture$repo, "future.txt", "future", future)
+    blocked_sha <- commit_file(fixture$repo, "blocked.txt", "blocked", "2020-01-02T00:00:00+0000")
+
+    pusher::add_repo(fixture$repo)
+    upcoming <- pusher::upcoming_pushes()
+
+    expect_equal(upcoming$sha, c(future_sha, blocked_sha))
+    expect_equal(upcoming$state, c("waiting", "blocked"))
+    expect_equal(upcoming$position, c(1L, 2L))
   })
 })
 

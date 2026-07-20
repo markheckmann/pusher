@@ -2,17 +2,19 @@
 % Please edit documentation in R/upcoming.R
 \name{upcoming_pushes}
 \alias{upcoming_pushes}
-\title{List upcoming unpublished commits}
+\title{List unpublished commits waiting to be pushed}
 \usage{
 upcoming_pushes(n = 20)
 }
 \arguments{
-\item{n}{Maximum number of upcoming commits to return.}
+\item{n}{Maximum number of unpublished commits to return.}
 }
 \value{
-A data frame of future unpublished commits, including commit titles,
-ordered by effective date.
+A data frame of unpublished commits, including commit titles and a
+\code{state} column. \code{due} commits can be pushed on the next check, \code{waiting}
+commits are still scheduled for the future, and \code{blocked} commits are due
+by date but cannot be pushed before an earlier unpublished commit.
 }
 \description{
-List upcoming unpublished commits
+List unpublished commits waiting to be pushed
 }

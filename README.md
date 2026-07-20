@@ -44,7 +44,10 @@ pusher::upcoming_pushes()
 pusher::check_once(dry_run = TRUE)
 ```
 
-`upcoming_pushes()` includes each commit title.
+`upcoming_pushes()` includes each commit title and a `state` column. `due`
+commits can be pushed on the next check, `waiting` commits are still scheduled
+for the future, and `blocked` commits are due by date but cannot be pushed before
+an earlier unpublished commit.
 
 When commits are due, `pusher` pushes the newest contiguous due commit:
 
@@ -73,7 +76,7 @@ pusher::last_pushes()
 pusher::last_pushes(n = 5)
 ```
 
-Show the next check estimate, next commits to push, and recent pushes:
+Show the next check estimate, unpublished commits in line, and recent pushes:
 
 ```r
 pusher::overview()

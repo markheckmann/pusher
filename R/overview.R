@@ -155,6 +155,7 @@
     repo = .repo_name(upcoming$repo_root),
     branch = upcoming$branch,
     sha = .short_sha(upcoming$sha),
+    state = upcoming$state,
     title = upcoming$title,
     remote = paste0(upcoming$remote, "/", upcoming$remote_branch),
     stringsAsFactors = FALSE
@@ -163,7 +164,21 @@
 
 .overview_next_push_line <- function(upcoming, now = Sys.time()) {
   if (!nrow(upcoming)) {
-    return("Next push: no future unpublished commits.")
+    return("Next push: no unpublished commits in line.")
+  }
+
+  if ("state" %in% names(upcoming)) {
+    due <- upcoming[upcoming$state == "due", , drop = FALSE]
+    if (nrow(due)) {
+      return(sprintf("Next push due now: %s", due$title[[1]]))
+    }
+
+    waiting <- upcoming[upcoming$state == "waiting", , drop = FALSE]
+    if (nrow(waiting)) {
+      upcoming <- waiting
+    } else {
+      return("Next push: blocked until earlier commits are due.")
+    }
   }
 
   next_time <- .iso_to_time(upcoming$effective_date[[1]])
@@ -268,11 +283,11 @@
 #' Show a pusher overview
 #'
 #' Prints the estimated next check cycle, a countdown to the next commit date,
-#' the next unpublished commits waiting for their scheduled date, and recent
-#' successful pushes. Printed timestamps use human-readable labels in the
+#' unpublished commits in line to be pushed, and recent successful pushes.
+#' Printed timestamps use human-readable labels in the
 #' system timezone.
 #'
-#' @param upcoming_n Maximum number of upcoming commits to show.
+#' @param upcoming_n Maximum number of unpublished commits in line to show.
 #' @param last_n Maximum number of recent successful pushes to show.
 #' @return A list with `scheduler`, `upcoming`, and `last_pushes` data frames,
 #'   invisibly.
@@ -291,7 +306,7 @@ overview <- function(upcoming_n = 5, last_n = 5) {
 
   .print_overview_summary(.overview_summary_lines(upcoming, pushes))
   .print_overview_section("Next Check Cycle", .overview_scheduler_table(scheduler), "Scheduler status is unavailable.")
-  .print_overview_section("Next Commits To Push", .overview_upcoming_table(upcoming), "No future unpublished commits.")
+  .print_overview_section("Commits In Line", .overview_upcoming_table(upcoming), "No unpublished commits in line.")
   .print_overview_section("Last Commits Pushed", .overview_last_pushes_table(pushes), "No successful pushes logged.")
 
   invisible(list(

@@ -29,7 +29,7 @@ test_that("overview returns and prints scheduler, upcoming, and push sections", 
     expect_match(paste(output, collapse = "\n"), "Next Check Cycle")
     expect_match(paste(output, collapse = "\n"), "system_time")
     expect_match(paste(output, collapse = "\n"), "time_zone")
-    expect_match(paste(output, collapse = "\n"), "Next Commits To Push")
+    expect_match(paste(output, collapse = "\n"), "Commits In Line")
     expect_match(paste(output, collapse = "\n"), "commit next.txt")
     expect_match(paste(output, collapse = "\n"), "Last Commits Pushed")
     expect_match(paste(output, collapse = "\n"), "Fix pushed thing")
@@ -67,7 +67,7 @@ test_that("overview_summary prints only the management summary", {
     expect_equal(length(output), 4)
     expect_match(output[[1]], "Pusher Overview", fixed = TRUE)
     expect_false(any(grepl("Next Check Cycle", output, fixed = TRUE)))
-    expect_false(any(grepl("Next Commits To Push", output, fixed = TRUE)))
+    expect_false(any(grepl("Commits In Line", output, fixed = TRUE)))
     expect_false(any(grepl("Last Commits Pushed", output, fixed = TRUE)))
   })
 })
@@ -76,7 +76,7 @@ test_that("overview reports when no next push is available", {
   with_pusher_home({
     output <- utils::capture.output(pusher::overview(upcoming_n = 0, last_n = 0))
 
-    expect_match(paste(output, collapse = "\n"), "Next push: no future unpublished commits", fixed = TRUE)
+    expect_match(paste(output, collapse = "\n"), "Next push: no unpublished commits in line", fixed = TRUE)
     expect_match(paste(output, collapse = "\n"), "Pushes in line: 0", fixed = TRUE)
     expect_match(paste(output, collapse = "\n"), "Last push: none recorded", fixed = TRUE)
   })
@@ -85,6 +85,25 @@ test_that("overview reports when no next push is available", {
 test_that("overview push line counts visible queued pushes", {
   expect_equal(pusher:::.overview_pushes_in_line(data.frame()), "Pushes in line: 0")
   expect_equal(pusher:::.overview_pushes_in_line(data.frame(sha = c("a", "b"))), "Pushes in line: 2")
+})
+
+test_that("overview reports overdue unpublished commits as due now", {
+  with_pusher_home({
+    fixture <- make_repo()
+    commit_file(fixture$repo, "initial.txt", "initial", "2020-01-01T00:00:00+0000")
+    git(fixture$repo, c("push", "-u", "origin", "main"))
+
+    due_sha <- commit_file(fixture$repo, "due.txt", "due", "2020-01-02T00:00:00+0000")
+    pusher::add_repo(fixture$repo)
+
+    output <- utils::capture.output(result <- pusher::overview(upcoming_n = 1, last_n = 0))
+
+    expect_equal(result$upcoming$sha, due_sha)
+    expect_equal(result$upcoming$state, "due")
+    expect_match(paste(output, collapse = "\n"), "Next push due now: commit due.txt", fixed = TRUE)
+    expect_match(paste(output, collapse = "\n"), "Commits In Line", fixed = TRUE)
+    expect_match(paste(output, collapse = "\n"), "due", fixed = TRUE)
+  })
 })
 
 test_that("overview last push line reports recent push", {

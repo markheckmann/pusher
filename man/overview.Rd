@@ -7,7 +7,7 @@
 overview(upcoming_n = 5, last_n = 5)
 }
 \arguments{
-\item{upcoming_n}{Maximum number of upcoming commits to show.}
+\item{upcoming_n}{Maximum number of unpublished commits in line to show.}
 
 \item{last_n}{Maximum number of recent successful pushes to show.}
 }
@@ -17,7 +17,7 @@ invisibly.
 }
 \description{
 Prints the estimated next check cycle, a countdown to the next commit date,
-the next unpublished commits waiting for their scheduled date, and recent
-successful pushes. Printed timestamps use human-readable labels in the
+unpublished commits in line to be pushed, and recent successful pushes.
+Printed timestamps use human-readable labels in the
 system timezone.
 }

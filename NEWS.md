@@ -1,3 +1,11 @@
+# pusher 0.0.5
+
+* Changed `upcoming_pushes()` and `overview()` to include overdue unpublished
+  commits, not just commits scheduled for the future. The listing now includes a
+  `state` column: `due` commits can be pushed on the next check, `waiting`
+  commits are scheduled for the future, and `blocked` commits are already due by
+  date but cannot be pushed before an earlier unpublished commit.
+
 # pusher 0.0.4
 
 * Added `overview_summary()` to print only the `overview()` management summary
