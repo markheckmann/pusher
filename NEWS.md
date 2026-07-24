@@ -1,5 +1,8 @@
 # pusher 0.0.5
 
+* Changed `overview_summary()` to include a count and compact bullet list of
+  tracked repo/branch pairs.
+
 * Changed `upcoming_pushes()` and `overview()` to include overdue unpublished
   commits, not just commits scheduled for the future. The listing now includes a
   `state` column: `due` commits can be pushed on the next check, `waiting`

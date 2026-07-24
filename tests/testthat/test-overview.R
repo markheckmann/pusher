@@ -42,7 +42,7 @@ test_that("overview validates counts", {
   expect_error(pusher::overview(last_n = -1), "last_n")
 })
 
-test_that("overview_summary prints only the management summary", {
+test_that("overview_summary prints the management summary and tracked repos", {
   with_pusher_home({
     fixture <- make_repo()
     commit_file(fixture$repo, "initial.txt", "initial", "2020-01-01T00:00:00+0000")
@@ -60,15 +60,34 @@ test_that("overview_summary prints only the management summary", {
 
     output <- utils::capture.output(lines <- pusher::overview_summary())
 
-    expect_length(lines, 3)
+    expect_length(lines, 5)
     expect_match(lines[[1]], "Last push .*: Fix pushed thing")
     expect_match(lines[[2]], "Next push in [0-9]+ hours: commit next.txt")
     expect_equal(lines[[3]], "Pushes in line: 1")
+    expect_equal(lines[[4]], "Tracked repos/branches: 1")
+    expect_equal(lines[[5]], sprintf("%s [main -> origin/main]", normalizePath(fixture$repo)))
     expect_equal(length(output), 4)
     expect_match(output[[1]], "Pusher Overview", fixed = TRUE)
+    tracked_output <- utils::capture.output(pusher:::.print_overview_tracked(lines[4:5]), type = "message")
+    expect_match(tracked_output[[1]], "Tracked repos/branches: 1", fixed = TRUE)
+    tracked_items <- tracked_output[-1L]
+    tracked_text <- paste(tracked_items, collapse = "\n")
+    expect_true(any(grepl("^[^[:space:]]( |$)", tracked_items)))
+    expect_match(tracked_text, normalizePath(fixture$repo), fixed = TRUE)
+    expect_match(tracked_text, "main -> origin/main", fixed = TRUE)
     expect_false(any(grepl("Next Check Cycle", output, fixed = TRUE)))
     expect_false(any(grepl("Commits In Line", output, fixed = TRUE)))
     expect_false(any(grepl("Last Commits Pushed", output, fixed = TRUE)))
+  })
+})
+
+test_that("overview_summary reports no tracked repos", {
+  with_pusher_home({
+    output <- utils::capture.output(lines <- pusher::overview_summary())
+
+    expect_equal(lines[[4]], "Tracked repos/branches: 0")
+    tracked_output <- utils::capture.output(pusher:::.print_overview_tracked(lines[4]), type = "message")
+    expect_match(tracked_output[[1]], "Tracked repos/branches: 0", fixed = TRUE)
   })
 })
 

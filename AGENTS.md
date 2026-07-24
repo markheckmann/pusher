@@ -33,6 +33,7 @@ R CMD INSTALL .
 - Bump `Version` in `DESCRIPTION` whenever preparing a released commit or making larger behavior/API changes.
 - Update `NEWS.md` whenever changes are made and committed.
 - When committing, write a concise subject plus a comprehensive body that clearly explains what changed and why.
+- Prefer `cli` package functions for console output in user-facing package code.
 - Git interaction is intentionally shell-based via `system2("git", ...)`.
 - Tests use temporary Git repositories and should not touch real user repositories.
 - Use `PUSHER_HOME` in tests to isolate state from `~/.pusher`.
