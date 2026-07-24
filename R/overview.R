@@ -271,27 +271,11 @@
 }
 
 .overview_tracked_lines <- function(repos) {
-  count_line <- sprintf("Tracked repos/branches: %s", nrow(repos))
-  if (!nrow(repos)) {
-    return(count_line)
-  }
-
-  repos <- repos[order(repos$repo_root, repos$branch), , drop = FALSE]
-  repo_lines <- sprintf(
-    "%s [%s -> %s/%s]",
-    repos$repo_root,
-    repos$branch,
-    repos$remote,
-    repos$remote_branch
-  )
-  c(count_line, repo_lines)
+  sprintf("Tracked repos/branches: %s", nrow(repos))
 }
 
 .print_overview_tracked <- function(lines) {
-  cli::cli_text(cli::col_blue(lines[[1]]))
-  if (length(lines) > 1L) {
-    cli::cli_ul(lines[-1L])
-  }
+  cli::cat_line(cli::col_blue(lines[[1]]))
   invisible(lines)
 }
 
@@ -344,10 +328,10 @@ overview <- function(upcoming_n = 5, last_n = 5) {
 #' Show the pusher overview summary
 #'
 #' Prints the `Pusher Overview` heading, the three management summary lines from
-#' [overview()] (last push, next push, and pushes in line), and a compact bullet
-#' list of tracked repo/branch pairs.
+#' [overview()] (last push, next push, and pushes in line), and the tracked
+#' repo/branch count.
 #'
-#' @return The printed summary and tracked repo/branch lines, invisibly.
+#' @return The printed summary lines and tracked repo/branch count, invisibly.
 #' @export
 overview_summary <- function() {
   upcoming <- upcoming_pushes(n = Inf)

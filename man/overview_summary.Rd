@@ -7,10 +7,10 @@
 overview_summary()
 }
 \value{
-The printed summary and tracked repo/branch lines, invisibly.
+The printed summary lines and tracked repo/branch count, invisibly.
 }
 \description{
 Prints the \verb{Pusher Overview} heading, the three management summary lines from
-\code{\link[=overview]{overview()}} (last push, next push, and pushes in line), and a compact bullet
-list of tracked repo/branch pairs.
+\code{\link[=overview]{overview()}} (last push, next push, and pushes in line), and the tracked
+repo/branch count.
 }
